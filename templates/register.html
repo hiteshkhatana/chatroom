@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<br><br>
+<div class = "container-fluid text-center">
+
+    <div class = "container w-50 border text-center">
+        <br>
+        <h3>REGISTER</h3>
+        <br>
+        <form class = "form-control" method="POST">{% csrf_token %}
+
+            <br>
+            <div class="row">
+                <label class = "col-3">First name : </label>
+                <div class = "col-8">
+                    <input class = "form-control" name = "first-name" placeholder="First Name" required>
+                </div>
+            </div>
+            <br>
+
+            <div class="row">
+                <label class = "col-3">Last name : </label>
+                <div class = "col-8">
+                    <input class = "form-control" name = "last-name" placeholder="Last Name" required>
+                </div>
+            </div>
+            <br>
+
+            <div class="row">
+                <label class = "col-3">Email : </label>
+                <div class = "col-8">
+                    <input class = "form-control" name = "email" placeholder="Email" required>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="row">
+                <label class = "col-3">Username : </label>
+                <div class = "col-8">
+                    <input class = "form-control" name = "username" placeholder="Username" required>
+                </div>
+            </div>
+
+            <br>
+
+            <div class=  "row">
+                <label class = "col-3">Password : </label>
+                <div class = "col-8">
+                    <input class = "form-control" type="password" name = "password" placeholder="password" required>
+                </div>
+            </div>
+
+            <br>
+
+            <div class=  "row">
+                <label class = "col-3">Confirm Password : </label>
+                <div class = "col-8">
+                    <input class = "form-control" type="password" name = "confirm-password" placeholder="confirm password" required>
+                </div>
+            </div>
+
+            <br>
+
+            <div class=  "row">
+                <label class = "col-2">Captcha : </label>
+                
+                <div class = "bg-dark text-light col-2">
+                    <input type = "hidden" name = "xvalue" value={{x}}>{{x}} +
+                    <input type="hidden" name = "yvalue" value={{y}}>{{y}}
+                </div>
+
+                <div class = "col-8">
+                    <input class = "form-control" name = "ans" placeholder="Enter" required>
+                </div>
+            </div>
+            <br>
+            {% for message in messages %}
+	            {{message}}
+            {% endfor %}
+            <br>
+            <br>
+            <a href="/" style="font-size: 15px;text-decoration: underline;">Already have an account? Login here</a>
+            <br>
+            <br>
+            
+            <button class = "btn btn-success">Register</button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+{% endblock content %}

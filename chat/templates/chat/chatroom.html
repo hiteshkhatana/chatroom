@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+        <br>
+
+        <div class="container text-center">
+            <h3>CHATROOM</h3>
+            <br>
+            <b>Chatroom ID - {{room}}</b>
+            <br>
+            User ID - <span id = "user-id">{{request.user}}</span>
+        </div>
+        
+    
+        <br>
+        <div class="container w-75">
+
+        <div id="div1" style="height: 300px;position:relative;">
+            <div id="div2" style="max-height:100%;overflow:auto;border:1px solid red;">
+              <div id="div3" style="height:300px;">
+                
+                <div id = "screen" class = "float-start w-100 ms-2">
+                    {% for obj in chats %}
+                    
+                        <b>{{obj.username}} - </b> {{obj.message}}
+                        <hr>
+                        
+                    {% endfor %}
+                    
+                    </div>
+                
+            
+                </div>
+            </div>
+          </div>
+        </div>
+        <br>
+            
+            <center>
+
+            <div class="container row w-50">
+                <div class="col-10">
+                    <input class = "form-control" id = "message" name = "message">
+                </div>
+                <div class = "col-2">
+                    <button class = "btn btn-success" id = "send-button" type = "submit">Send</button>
+                </div>
+            </div>
+            
+        </center>
+        
+        </div>
+        
+
+        
+        {{ room|json_script:"room_name"}}
+    
+
+{% endblock %}

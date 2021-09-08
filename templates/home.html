@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<br><br>
+
+<div class="container w-50">
+    <form class = "form-control" method="POST" action="/home/">{% csrf_token %}
+        <div class="row">
+            <div class="col-10">
+            <input class = "form-control" name = "username" placeholder="Search other users">
+            </div>
+            <div class="col-2">
+                <button class="btn btn-success">Search</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<br>
+<hr>
+
+<form class = "form-control container w-75" method="POST" action="/edit/">{% csrf_token %} 
+    <div class = "row">
+        <label class="col-4">FIELDS</label>
+        <label class="col-8">VALUES</label>
+    </div>
+    <br>
+    <div class = "row">
+        <label class="col-4">First Name</label>
+        <input class="col-8" name = "first_name" value="{{user.first_name}}">
+    </div>
+    <br>
+    <div class = "row">
+        <label class="col-4">Last Name</label>
+        <input class="col-8" name = "last_name" value="{{user.last_name}}">
+    </div>
+    <br>
+    <div class = "row">
+        <label class="col-4">username</label>
+        <label class="col-8">{{user.username}}</label>
+    </div>
+    <br>
+    <div class = "row">
+        <label class="col-4">Email</label>
+        <input class="col-8" name = "email" value="{{user.email}}">
+    </div>
+    <br>
+    <center>
+    {% for message in messages %}
+	    {{message}}
+    {% endfor %}
+</center>
+    <br>
+    <br>
+
+    <div class = "row">
+        <button class="btn btn-success" type="submit">Save</button>
+    </div>
+    
+
+</form>
+
+{% endblock content %}

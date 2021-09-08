@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<br><br>
+
+<div class="container w-50">
+    <form class = "form-control" method="POST">{% csrf_token %}
+        <div class="row">
+            <div class="col-10">
+            <input class = "form-control" name = "username" placeholder="Search other users">
+            </div>
+            <div class="col-2">
+                <button class="btn btn-success">Search</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<br>
+<hr>
+
+<table class = "table container w-75"> 
+    <thead>
+        <tr>
+            <th>FIELDS</th>
+            <th>VALUES</th>
+            
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+            <td>First Name</td>
+            <td>{{user.first_name}}</td>
+            
+        </tr>
+
+        <tr>
+            <td>Last Name</td>
+            <td>{{user.last_name}}</td>
+            
+        </tr>
+
+        <tr>
+            <td>username</td>
+            <td>{{user.username}}</td>
+            
+        </tr>
+
+        <tr>
+            <td>Email</td>
+            <td>{{user.email}}</td>
+            
+        </tr>
+    </tbody>
+
+</table>
+
+{% endblock content %}

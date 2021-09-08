@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<br><br>
+<div class = "container-fluid text-center">
+
+    <div class = "container w-50 border text-center">
+        <br>
+        <h3>LOGIN</h3>
+        <br>
+        <form class = "form-control" method="POST">{% csrf_token %}
+
+            <br>
+
+            <div class="row">
+                <label class = "col-3">Username : </label>
+                <div class = "col-8">
+                    <input class = "form-control" name = "username" placeholder="Username" required>
+                </div>
+            </div>
+
+            <br>
+
+            <div class=  "row">
+                <label class = "col-3">Password : </label>
+                <div class = "col-8">
+                    <input class = "form-control" type="password" name = "password" placeholder="password" required>
+                </div>
+            </div>
+            <br>
+            {% for message in messages %}
+	            {{message}}
+            {% endfor %}
+            <br>
+            <br>
+            <a href="/register" style="font-size: 15px;text-decoration: underline;">Don't have an account? Signup here</a>
+            <br>
+            <br>
+            <button class = "btn btn-success">Login</button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+{% endblock content %}
