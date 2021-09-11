@@ -5,6 +5,14 @@ from django.contrib.auth import authenticate, login, logout
 import random
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.db.models import Q
+import json
+
+
+
+from users.models import ProfileModel
+
 # Create your views here.
 def login_view(request):
 
@@ -22,12 +30,28 @@ def login_view(request):
 
         if user is not None:
             login(request , user)
+
+            make_online(request)
+
+            
             return redirect('/home')
 
         else:
             messages.info(request , "Wrong username or password!!")
     return render(request , 'login.html')
 
+def add_profiles(request):
+    ProfileModel.objects.create(username = request.user)
+
+def make_online(request):
+    obj = ProfileModel.objects.get(username = request.user)
+    obj.status = True
+    obj.save()
+
+def make_offline(request):
+    obj = ProfileModel.objects.get(username = request.user)
+    obj.status = False
+    obj.save()
 
 def register_view(request):
 
@@ -69,6 +93,8 @@ def register_view(request):
 
                         login(request, user)
 
+                        add_profiles(request)
+
                         return redirect('/home')
 
                     else:
@@ -92,14 +118,19 @@ def register_view(request):
 
 
 def logout_view(request):
+    make_offline(request)
     logout(request)
     return redirect('/')
 
 @login_required(login_url='/')
 def home_view(request):
 
+    obj = ProfileModel.objects.get(username = request.user)
+
     context = {
-        'user' : request.user
+        'user' : request.user,
+        'profile' : obj,
+        
     }
 
     if request.method == "POST":
@@ -160,8 +191,21 @@ def detail_view(request , pk):
         }
     return render(request, 'detail.html' , context)
 
+def list_of_users(request):
+    objs = ProfileModel.objects.filter(~Q(username = request.user)).values_list('username','status')
     
+    return JsonResponse([list(objs),request.user.username] , safe = False)
 
+
+def setprofile(request):
+
+    img = request.FILES['dp-image']
+    obj = ProfileModel.objects.get(username = request.user)
+    obj.dp = img
+    obj.save()
+    
+    return redirect('/')
+        
 
 
 def generate_captcha():

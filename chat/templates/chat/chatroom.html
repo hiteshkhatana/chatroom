@@ -2,6 +2,7 @@
 
 
 {% block content %}
+
         <br>
 
         <div class="container text-center">
@@ -12,28 +13,31 @@
             User ID - <span id = "user-id">{{request.user}}</span>
         </div>
         
-    
+        
         <br>
         <div class="container w-75">
 
-        <div id="div1" style="height: 300px;position:relative;">
-            <div id="div2" style="max-height:100%;overflow:auto;border:1px solid red;">
-              <div id="div3" style="height:300px;">
+        <div style="height: 300px;position:relative;">
+            <div id = "scrollable_window" style="max-height:100%;overflow:auto;border:1px solid red;">
+                <div style="height:300px;">
                 
-                <div id = "screen" class = "float-start w-100 ms-2">
-                    {% for obj in chats %}
-                    
-                        <b>{{obj.username}} - </b> {{obj.message}}
-                        <hr>
+                    <div id = "screen" class = "float-start w-100 ms-2">
+                        {% for obj in chats %}
                         
-                    {% endfor %}
+                            <b>{{obj.username}} - </b> {{obj.message}} <br>
+                            <i>{{obj.date}}</i>
+                            <hr>
+                            
+                        {% endfor %}
                     
                     </div>
                 
             
                 </div>
             </div>
-          </div>
+        </div>
+        
+        
         </div>
         <br>
             

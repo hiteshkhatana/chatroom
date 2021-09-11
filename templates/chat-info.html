@@ -1,0 +1,134 @@
+<html>
+
+<head>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+</head>
+
+<body>
+
+
+    <div style="width: 300px; height: 350px; position: absolute; z-index: 1; left: 30px; bottom: 20;">
+        <div style="max-height:100%;overflow:auto;border:1px solid red;">
+          <div style="height:350px;">
+            
+            
+                <div  id = "users-list" class = "float-start w-75 ms-2"  style="width:120px;margin-left:20px;margin-top: 20px;">
+
+    
+                
+                </div>
+            
+        
+            </div>
+        </div>
+      </div>
+
+
+      <div class = "container bg-dark text-light" style="width:400px;position: fixed;z-index: 1;bottom:0;right:20;">
+        <div id="message-container" style="cursor:pointer"><h4>New messages</h4></div>
+
+        <div id="div1" style="height: 300px;position:relative;">
+          <div id="div2" style="max-height:100%;overflow:auto;border:1px solid red;">
+            <div id="div3" style="height:300px;">
+              
+              <div id = "notifications-list" class = "float-start w-100 ms-2">
+                  
+                  
+                  </div>
+              
+          
+              </div>
+          </div>
+        </div>
+    </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+
+        $('#message-container').on( "click", function(){
+                $('#div1').toggle();
+
+              });
+
+        $('#message-container').click()
+
+
+        $(document).ready(function(){
+
+            $.ajax({
+                type : "GET",
+                url : '/getuserslist/',
+                success : function(data){
+
+                    
+
+
+                    $('#users-list').empty()
+
+                    for (i = 0;i<data[0].length;i++){
+
+                        if (data[0][i][1] == true ){
+                            $('#users-list').append(`<div id = ${data[0][i][0]} onclick = "chatuser(this.id,'${data[1]}')" style = "background-color: bisque;padding:10px;cursor:pointer;"><b>${data[0][i][0]}</b> <i class="fas fa-circle fa-sm" style = "color:green;float:right;"></i> </div><br>`);
+                        }else{
+                            $('#users-list').append(`<div id = ${data[0][i][0]} onclick = "chatuser(this.id,'${data[1]}')" style = "background-color: bisque;padding:10px;cursor:pointer;" ><b>${data[0][i][0]}</b> <i class="fas fa-circle fa-sm" style = "color:red;float:right;"></i> </div><br>`);
+                        }
+                        
+                    }
+                }
+            }).done(function(){
+
+                $.ajax({
+
+                    type : 'GET',
+                    url : '/chat/get/notifications/',
+                    success : function(notifications){
+
+                        $('#notifications-list').empty()
+
+                        if (notifications.length == 0){
+                            $('#notifications-list').append(`<br><div style = "background-color: white;padding:10px;color:black">No new message for you</div><br>`)
+
+                        }
+                        for (i = 0 ; i<notifications.length; i++){
+                            $('#notifications-list').append(`<br><div onclick = "startchat('${notifications[i].sender}','${notifications[i].receiver}')" style = "background-color: white;padding:10px;cursor:pointer;color:black">${notifications[i].sender} sent you a message. </div><br>`)
+                        }
+                    }
+
+                    });
+            });
+
+
+
+        })
+        
+
+    function startchat(sender , receiver){
+    
+        $.ajax({
+            type: "POST",
+            url : '/chat/get/seenstatus/',
+            data : {
+                sender : sender,
+                receiver : receiver,
+                csrfmiddlewaretoken : $('input[name = csrfmiddlewaretoken').val(),
+            },
+            success : function(e){
+                window.location.replace("/chat/private/" + receiver + "-" + sender + "/");
+            }
+            
+
+        })
+    }
+       
+
+    function chatuser(targeted , currentuser){
+        
+        window.location.replace("/chat/private/" + currentuser + "-" + targeted + "/");
+    }
+
+</script>
+
+</body>
+
+</html>

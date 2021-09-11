@@ -19,7 +19,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'chatroom.settings')
 application = get_asgi_application()
 
 ws_patterns = [
-    path('ws/chat/<room_name>/' , ChatConsumer.as_asgi())
+    path('ws/chat/<room_name>/' , ChatConsumer.as_asgi()),
 ]
 
 application = ProtocolTypeRouter({

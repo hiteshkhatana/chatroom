@@ -1,0 +1,335 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+        <br>
+
+        <div class="container text-center">
+            <h3>PRIVATE CHAT</h3>
+            <br>
+            <b><span id = "sender">{{currentuser}}</span> and <span id = "receiver">{{targeted}}</span> are chatting</b>
+            <br>
+            Your ID - <span id = "user-id">{{request.user}}</span>
+        </div>
+        
+    
+        <br>
+        <div class="container w-75">
+
+        <div style="height: 300px;position:relative;">
+            <div id = "scrollable_window" style="max-height:100%;overflow:auto;border:1px solid red;">
+              <div style="height:300px;">
+                
+                <div id = "screen" class = "float-start w-100 ms-2">
+                    {% for obj in chats %}
+
+                        {% if obj.username == currentuser %}
+                        <div class="row">
+                            <div class="col-6">
+                            </div>
+                            <div class="col-6 border">
+                            <b>You - </b> {{obj.message}}
+                            <div><a href = "{{obj.link}}">{{obj.link}}</a></div>
+                            {% if obj.img != "" %}
+                            <img style="height:150px;width:150px;border:2px solid black;" src = '{{obj.img.url}}'>
+                            {% endif %}
+        
+                            <i>{{obj.date}}</i>
+                            <div onclick="deletemessage('{{obj.username}}','{{obj.message}}',this)" style="cursor: pointer;text-decoration: underline;">delete</div>
+                            </div>
+                            <br>
+                        </div>
+
+                        {% else %}
+                        <div class="row">
+                            
+                            <div class="col-6 border">
+                            <b>{{obj.username}} - </b> {{obj.message}}
+                            <div><a href = "{{obj.link}}">{{obj.link}}</a></div>
+                            {% if obj.img != "" %}
+                            <img style="height:150px;width:150px;border:2px solid black;" src = '{{obj.img.url}}'>
+                            {% endif %}
+                            <i>{{obj.date}}</i>
+                            </div>
+                            <br>
+                        </div>
+                        
+                        {% endif %}
+                        
+                        
+
+                        
+                    {% endfor %}
+                    
+                    </div>
+                
+            
+                </div>
+            </div>
+          </div>
+        
+        
+        </div>
+        <br>
+            
+            <center>
+
+            <div class="container row w-50">
+                <div class="col-10">
+                    <input class = "form-control" id = "message" name = "message" placeholder="Type your message">
+                    <br>
+                    <div class="row">
+                        <div class="col-6">
+                        <input type="file" class="form-control" id = "attached">
+                    </div>
+                    <div class="col-6">
+                        <input id = "link" class="form-control" placeholder="Send link"> 
+                    </div>   
+                    </div>
+                    
+                </div>
+                <div class = "col-2">
+                    <button class = "btn btn-success" onclick="sendmessage()" id = "send-button" type = "submit">Send</button>
+                </div>
+            </div>
+            
+        </center>
+        
+        </div>
+
+        {{ room|json_script:"room_name"}}
+
+
+        <script>
+
+            let imgdata = "";
+    
+        
+            const roomName = JSON.parse(document.getElementById('room_name').textContent);
+          
+            
+          const chatSocket = new WebSocket(
+              'ws://'
+              + window.location.host
+              + '/ws/chat/'
+              + roomName 
+              + '/'
+          );
+          
+          chatSocket.onclose = function(e) {
+              console.error('Chat socket closed unexpectedly');
+          };
+
+
+          chatSocket.onmessage = function(e) {
+            
+            const data = JSON.parse(e.data);
+            const sender = $('#sender').text();
+
+            if (sender == data.username){
+
+                if (data.img != "" ){
+
+                    $('#screen').append(`<div class="row">
+                          <div class="col-6"></div>
+                          <div class="col-6 border">
+                          <b>You - </b> ${data.message}
+                          <div><a href = "${data.link}">${data.link}</a></div>
+                          <img style="height:150px;width:150px;border:2px solid black;" src = '${data.img}'>
+                          <i>${data.msgtime}</i>
+                          <div onclick="deletemessage(${data.username},${data.message},this)" style="cursor: pointer;text-decoration: underline;">delete</div>
+                          </div><br>
+                      </div>`);
+                }else{
+              $('#screen').append(`<div class="row">
+                          <div class="col-6"></div>
+                          <div class="col-6 border">
+                          <b>You - </b> ${data.message}
+                          <div><a href = "${data.link}">${data.link}</a></div>
+                          <i>${data.msgtime}</i>
+                          <div onclick="deletemessage(${data.username},${data.message},this)" style="cursor: pointer;text-decoration: underline;">delete</div>
+                          </div><br>
+                      </div>`);
+
+                    };
+
+            }else{
+
+                if (data.img != "" ){
+                    $('#screen').append(`<div class="row">
+                                
+                                <div class="col-6 border">
+                                <b>${data.username} - </b> ${data.message}
+                                <div><a href = "${data.link}">${data.link}</a></div>
+                                <img style="height:150px;width:150px;border:2px solid black;" src = '${data.img}'>
+                                <i>${data.msgtime}</i>
+                                </div><br>
+                            </div>`);
+                    }else{
+
+                        $('#screen').append(`<div class="row">
+                                
+                                <div class="col-6 border">
+                                <b>${data.username} - </b> ${data.message}
+                                <div><a href = "${data.link}">${data.link}</a></div>
+                                <i>${data.msgtime}</i>
+                                </div><br>
+                            </div>`);
+
+                    }
+
+            }
+            
+            updateScroll();
+                
+            
+        };
+
+
+
+
+        function deletemessage(username,message,elem){
+            $.ajax({
+            type: "POST",
+            url : '/chat/get/delete/',
+            data : {
+                username : username,
+                message : message,
+               
+                csrfmiddlewaretoken : '{{ csrf_token }}',
+            },
+            success : function(e){
+               $(elem).parent('div').parent('div').remove();
+            }
+            
+
+        })
+          }
+
+
+
+
+           function sendimage(){
+            var user = $('#user-id').text();
+            var data = new FormData();
+            data.append('username' , user);
+            data.append('room' , roomName);
+            data.append("file", $("input[id^='attached']")[0].files[0]);
+            data.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+            
+            $.ajax({
+                method: "POST",
+                url: "/chat/upload/images/",
+                processData: false,
+                contentType: false,
+                mimeType: "multipart/form-data",
+                data: data,
+                success: function(res) {
+
+
+                  const sender = $('#sender').text();
+
+                  var data = JSON.parse(res);
+
+                  
+                  imgdata = data;
+                  
+                    
+
+            }
+        })
+        
+          
+        }
+
+
+
+          function sendmessage(e) {
+
+            if ($('#attached').val() != ""){
+                
+               
+                    sendimage()
+
+                    setTimeout(
+                        function(){
+                        
+                            var message = document.getElementById('message').value;
+                                var user = $('#user-id').text();
+                                var link = $('#link').val();
+
+                                
+                                
+                                chatSocket.send(JSON.stringify({
+                                    'username' : user,
+                                    'message': message,
+                                    'room' : roomName,
+                                    'link' : link,
+                                        'img' : imgdata.img,
+                                    'sender' : $('#sender').text(),
+                                    'receiver' : $('#receiver').text(),
+                                    
+                                    
+                                }));
+                                            
+                        
+                        
+                        
+                        },1000
+                    )
+
+                    document.getElementById('attached').value = "";
+               
+
+            }else{
+
+
+              var message = document.getElementById('message').value;
+              var user = $('#user-id').text();
+              var link = $('#link').val();
+
+              
+              
+              chatSocket.send(JSON.stringify({
+                  'username' : user,
+                  'message': message,
+                  'room' : roomName,
+                  'link' : link,
+                    'img' : "",
+                  'sender' : $('#sender').text(),
+                  'receiver' : $('#receiver').text(),
+                  
+                  
+              }));
+
+        
+              document.getElementById('message').value = "";
+              document.getElementById('link').value = "";
+              
+          };
+
+        };
+
+          document.querySelector('#message').focus();
+        document.querySelector('#message').onkeyup = function(e) {
+            if (e.keyCode === 13) {  // enter, return
+                document.querySelector('#send-button').click();
+            }
+        };
+          
+          function updateScroll(){
+            var element = document.getElementById("scrollable_window");
+            element.scrollTop = element.scrollHeight;
+            }
+
+            updateScroll();
+
+              
+            
+
+
+        </script>
+        
+
+{% endblock %}

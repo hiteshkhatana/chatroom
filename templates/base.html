@@ -12,6 +12,9 @@
 
 
     <body>
+
+      
+
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <a class="navbar-brand" href="/">CHATROOM</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,7 +31,7 @@
               </ul>
           
               <div class="me-2 my-lg-0">
-                  <span>{{request.user}} - </span>&nbsp;
+                  <span class="text-light">{{request.user}} - </span>&nbsp;
                   <a href="/logout"><button class="btn btn-danger my-2 my-sm-0">Logout</button></a>
               </div>
             
@@ -42,14 +45,17 @@
 
         {% endblock content %}
 
+    </body>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script>
-          
+       
+
+        <!-- <script>
+
           const roomName = JSON.parse(document.getElementById('room_name').textContent);
           
-  
+            
           const chatSocket = new WebSocket(
               'ws://'
               + window.location.host
@@ -65,31 +71,137 @@
           chatSocket.onmessage = function(e) {
             
               const data = JSON.parse(e.data);
-              $('#screen').append(`<b>${data.username} - </b>${data.message}<hr>`);
+              const sender = $('#sender').text();
+
+              if (sender == data.username){
+                $('#screen').append(`<div class="row">
+                            <div class="col-6"></div>
+                            <div class="col-6 border">
+                            <b>You - </b> ${data.message} <br>
+                            <i>${data.msgtime}</i>
+                            <div onclick="deletemessage(${data.username},${data.message},this)" style="cursor: pointer;text-decoration: underline;">delete</div>
+                            </div><br>
+                        </div>`);
+
+              }else{
+                $('#screen').append(`<div class="row">
+                            
+                            <div class="col-6 border">
+                            <b>${data.username} - </b> ${data.message} <br>
+                            <i>${data.msgtime}</i>
+                            </div><br>
+                        </div>`);
+
+              }
               
-              
+              updateScroll();
                   
               
           };
+
+          function deletemessage(username,message,elem){
+            $.ajax({
+            type: "POST",
+            url : '/chat/get/delete/',
+            data : {
+                username : username,
+                message : message,
+               
+                csrfmiddlewaretoken : '{{ csrf_token }}',
+            },
+            success : function(e){
+               $(elem).parent('div').parent('div').remove();
+            }
+            
+
+        })
+          }
+
+          // function sendimage(){
+          //   var user = $('#user-id').text();
+          //   var data = new FormData();
+          //   data.append('username' , user);
+          //   data.append('room' , roomName);
+          //   data.append("file", $("input[id^='attached']")[0].files[0]);
+          //   data.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+            
+          //   $.ajax({
+          //       method: "POST",
+          //       url: "/chat/upload/images/",
+          //       processData: false,
+          //       contentType: false,
+          //       mimeType: "multipart/form-data",
+          //       data: data,
+          //       success: function(res) {
+
+          //         const sender = $('#sender').text();
+
+          //         if (sender == res.username){
+          //       $('#screen').append(`<div class="row">
+          //                   <div class="col-6"></div>
+          //                   <div class="col-6 border">
+          //                   <b>You - </b><br>
+          //                   <img style="height:150px;width:150px;border:2px solid black;" src = '${res.img.url}'>
+          //                   <i>${res.msgtime}</i>
+                            
+          //                   </div><br>
+          //               </div>`);
+
+          //     }else{
+          //       $('#screen').append(`<div class="row">
+                            
+          //                   <div class="col-6 border">
+          //                   <b>${res.username} - </b><br>
+          //                   <img style="height:150px;width:150px;border:2px solid black;" src = '${res.img.url}'>
+          //                   <i>${res.msgtime}</i>
+          //                   </div><br>
+          //               </div>`);
+          //       }
+          //   })
+          // }
+
+         
           
           document.querySelector('#send-button').onclick = function(e) {
+            alert(1);
+
+              // sendimage();
   
               
               var message = document.getElementById('message').value;
               var user = $('#user-id').text();
-  
               
               chatSocket.send(JSON.stringify({
                   'username' : user,
                   'message': message,
-                  'room' : roomName
+                  'room' : roomName,
+                  'sender' : $('#sender').text(),
+                  'receiver' : $('#receiver').text(),
+                  
                   
               }));
   
               document.getElementById('message').value = '';
           };
-              </script>
 
-    </body>
+          document.querySelector('#message').focus();
+        document.querySelector('#message').onkeyup = function(e) {
+            if (e.keyCode === 13) {  // enter, return
+                document.querySelector('#send-button').click();
+            }
+        };
+          
+          function updateScroll(){
+            var element = document.getElementById("scrollable_window");
+            element.scrollTop = element.scrollHeight;
+            }
+
+            updateScroll();
+
+              
+            }
+
+
+              </script> -->
 
 </html>

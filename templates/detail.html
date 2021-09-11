@@ -4,6 +4,8 @@
 {% block content %}
 <br><br>
 
+{% include 'chat-info.html' %}
+
 <div class="container w-50">
     <form class = "form-control" method="POST">{% csrf_token %}
         <div class="row">
